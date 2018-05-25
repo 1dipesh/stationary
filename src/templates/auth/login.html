@@ -1,0 +1,18 @@
+{% extends "home_page.html" %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+		<div class="col">
+<form method="POST">{% csrf_token %}
+	<div class="col-sm-6 col-12">
+		  	{{ form }}
+	<button type="submit" class="btn btn-default">Submit</button>
+</div>
+</form>
+        
+        </div>
+    </div>
+</div>
+{% endblock %}

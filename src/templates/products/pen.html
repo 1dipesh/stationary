@@ -1,0 +1,21 @@
+{% extends "home_page.html" %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+	<div class="row">
+
+{% for obj in pen %}
+
+		<div class="col-3 my-1">
+
+			{% include 'products/snippets/card.html' with instance=obj %}
+
+		</div>
+{% endfor %}
+
+	</div>
+</div>		
+
+{% endblock %}
