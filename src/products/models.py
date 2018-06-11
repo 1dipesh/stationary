@@ -35,16 +35,24 @@ class Product(models.Model):
 	categories = models.ManyToManyField('Category', blank=True)
 	image = models.ImageField(upload_to="products/", blank=True, null=True )
 	featured = models.BooleanField(default=False)
+	active = models.BooleanField(default=False)
 
 	objects = ProductManager()
 	
 
+	def __str__(self):
+		return self.name
+
 	def get_absolute_url(self):
 		return "/products/{slug}/".format(slug=self.slug)
 
+	def get_title(self):
+	 	return '{0}-{1}'.format(self.name)	
 
-	def __str__(self):
-		return self.name
+	def get_price():
+	 	return self.price	
+
+
 
 
 class Category(models.Model):

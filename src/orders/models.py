@@ -66,9 +66,9 @@ class Order(models.Model):
 			return True
 		return False	
 
-	def mark_paid(self):
+	def mark_shipped(self):
 		if self.check_done():
-			self.status='paid'	
+			self.status='shipped'	
 			self.save()
 		return self.status	
 			

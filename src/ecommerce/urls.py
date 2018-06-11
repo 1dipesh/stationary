@@ -32,11 +32,13 @@ from addresses.views import checkout_address_create_view
 from django.views.generic import TemplateView
 from accounts.views import login_page, register_page, guest_register_view
 from .views import home_page,about_page, contact_page
+from carts.views import cart_detail_api_view
 
 urlpatterns = [
     url(r'^$',ProductFeaturedListView.as_view(), name='home'),
 
     url(r'^about/$', about_page, name='about'),
+    url(r'^api/cart/$', cart_detail_api_view, name='api-cart'),
     url(r'^cart/', include("carts.urls", namespace='cart')),
     url(r'^contact/$', contact_page, name='contact'),        
     url(r'^login/$', login_page, name='login'), 

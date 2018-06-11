@@ -1,10 +1,16 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.contrib import admin
-from .models import Cart
+
+import models
 
 # Register your models here.
+class CartItemInline(admin.TabularInline):
+    model = models.CartItem
 
 
-admin.site.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    inlines = (CartItemInline,)
+    class Meta:
+        model = models.Cart
+
+
+admin.site.register(models.Cart, CartAdmin)

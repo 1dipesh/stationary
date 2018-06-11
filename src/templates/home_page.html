@@ -1,6 +1,6 @@
- 
+<!--  
 {% load staticfiles %}
-
+ -->
 <!doctype html>
     <html lang="en">
       <head>
@@ -33,11 +33,11 @@
     <ul class="navbar-nav mr-auto ml-auto">
       {% if request.user.is_authenticated %}
        <li class="nav-item">
-        <a class="nav-link" href="{% url 'logout' %}"><img src="C:\Users\subash\Desktop\stationary\src\templates\images\user.svg" alt="">Log out <span class="sr-only"></span></a>
+        <a class="nav-link" href="{% url 'logout' %}"><img src="#" alt="">Log out <span class="sr-only"></span></a>
       </li>
       {% else %}
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'login' %}"><img src="C:\Users\subash\Desktop\stationary\src\templates\images\user.svg" alt="">Log in <span class="sr-only"></span></a>
+        <a class="nav-link" href="{% url 'login' %}"><img src="#" alt="">Log in <span class="sr-only"></span></a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'register' %}"><img src="{% static 'img/user.png' %}">Register</a>
@@ -45,7 +45,7 @@
       {% endif %}
       
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'cart:home' %}"><img src="{% static 'img/cart.png' %}"> <b>{{ request.session.cart_items }}</b></a>
+        <a class="nav-link" href="{% url 'cart:home' %}"><img src="{% static 'img/cart.png' %}"> <b><span class="navbar-cart-count">{{ request.session.cart_items }}</span></b></a>
       </li>
       <!-- {% if request.user.is_authenticated %}
       <li class="nav-item">
@@ -151,12 +151,109 @@
 
 
       {% endblock %}
+      {% include "js.html" %}
+
+      <script>
+        $(document).ready(function(){
+          var productForm = $(".form-product-ajax")
+
+          productForm.submit(function(event){
+            event.preventDefault();
+            // console.log("Form is not sending")
+            var thisForm = $(this)
+            //var actionEndpoint = thisForm.attr("action");
+            var actionEndpoint = thisForm.attr("data-endpoint")
+            var httpMethod =thisForm.attr("method");
+            var formData = thisForm.serialize();
+
+            $.ajax({
+              url: actionEndpoint,
+              method: httpMethod,
+              data: formData,
+
+              success: function(data){
+               var submitSpan = thisForm.find(".submit-span")
+               if (data.added){
+                submitSpan.html('In cart<button type="submit" class="btn btn-link">Remove</button>')
+               }
+               else{
+                submitSpan.html('<button type="submit" class="btn btn-success">Add to cart</button>')
+               }
+               var navbarCount = $(".navbar-cart-count")
+               navbarCount.text(data.cartItemCount)
+               var currentPath = window.location.href
+
+               if (currentPath.indexOf("cart") != -1){
+                  refreshCart()
+               }
+
+              },
+              error: function(errorData){
+                console.log("error")
+                console.log(errorData)
+              }
+
+            })
+
+
+          })
+          function refreshCart(){
+
+            console.log("in current cart")
+            var cartTable = $(".cart-table")
+            var cartBody = cartTable.find(".cart-body")
+            // cartBody.html("<h1>Changed</h1>")
+            var productRows = cartBody.find(".cart-product")
+            var currentUrl = window.location.href
+
+
+            var refreshCartUrl = '/api/cart/' 
+            var refreshCartMethod = "GET";
+            var data = {};
+            $.ajax({
+              url:refreshCartUrl,
+              method: refreshCartMethod,
+              data: data,
+              success: function(data){
+
+               var hiddenCartItemRemoveForm = $(".cart-item-remove-form")
+                if (data.products.length > 0){
+                  productRows.html("")
+                  i = data.products.length
+                  $.each(data.products, function(index, value){
+                    console.log(value)
+                    var newCartItemRemove = hiddenCartItemRemoveForm.clone()
+                    newCartItemRemove.css("display", "block")
+                    newCartItemRemove.find(".cart-item-product-id").val(value.id)
+                    cartBody.prepend("<tr><th scope=\"row\">" + i + "</th><td><a href='" + value.url +"'>" + value.name + " </a>"+ newCartItemRemove.html() +"</td><td>"+ value.price +"</td></tr>")
+                    i--
+                  })                  
+                  cartBody.find(".cart-total").text(data.total)  
+                } else{
+                 window.location.href = currentUrl
+                }
+              },
+              error: function(errorData){
+                console.log("error")
+                console.log(errorData)
+              }
+            })
+
+          }
+
+
+
+        })
+
+      </script>
+
+
     </body>
 
 
       <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.min.js" ></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
     </html>
